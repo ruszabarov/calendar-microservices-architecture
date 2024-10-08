@@ -1,0 +1,39 @@
+version: "3"
+services:
+  krakend:
+    image: devopsfaith/krakend:watch
+    volumes:
+      - ".:/etc/krakend"
+    ports:
+      - "8080:8080"
+    command: [ "run", "-dc", "krakend.json" ]
+    networks:
+      - my-network
+
+  calendars-service:
+    build: ./calendars-service/
+    container_name: calendars-service
+    networks:
+      - my-network
+
+  meetings-service:
+    build: ./meetings-service/
+    container_name: meetings-service
+    networks:
+      - my-network
+
+  participants-service:
+    build: ./participants-service/
+    container_name: participants-service
+    networks:
+      - my-network
+
+  attachments-service:
+    build: ./attachments-service/
+    container_name: attachments-service
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

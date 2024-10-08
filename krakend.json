@@ -1,0 +1,287 @@
+{
+  "version": 3,
+  "extra_config": {
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "syslog": false,
+      "stdout": true
+    },
+    "telemetry/metrics": {
+      "collection_time": "60s",
+      "proxy_disabled": false
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/calendars",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/calendars",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/calendars",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars/{calendarId}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars/{calendarId}",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars/{calendarId}",
+      "method": "PUT",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars/{calendarId}",
+      "method": "DELETE",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/calendars/{calendarId}/meetings",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}/meetings",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/meetings",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/meetings",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}",
+      "method": "PUT",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}",
+      "method": "DELETE",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}/participants",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}/participants",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}/attachments",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/meetings/{meetingId}/attachments",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants/{participantId}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/participants/{participantId}",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/participants",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/participant",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants/{participantId}",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/participants/{participantId}",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants/{participantId}",
+      "method": "PUT",
+      "backend": [
+        {
+          "url_pattern": "/participants/{participantId}",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/participants/{participantId}",
+      "method": "DELETE",
+      "backend": [
+        {
+          "url_pattern": "/participants/{participantId}",
+          "host": ["http://participants-service:8080"]
+        }
+      ]
+    },
+
+    {
+      "endpoint": "/attachments",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/attachments",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/attachments",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/attachments",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/attachments/{attachmentsId}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/attachments/{attachmentsId}",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/attachments/{attachmentsId}",
+      "method": "POST",
+      "backend": [
+        {
+          "url_pattern": "/attachments/{attachmentsId}",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/attachments/{attachmentsId}",
+      "method": "PUT",
+      "backend": [
+        {
+          "url_pattern": "/attachments/{attachmentsId}",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/attachments/{attachmentsId}",
+      "method": "DELETE",
+      "backend": [
+        {
+          "url_pattern": "/attachments/{attachmentsId}",
+          "host": ["http://attachments-service:8080"]
+        }
+      ]
+    }
+  ]
+}
