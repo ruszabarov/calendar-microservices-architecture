@@ -5,10 +5,6 @@
       "level": "DEBUG",
       "syslog": false,
       "stdout": true
-    },
-    "telemetry/metrics": {
-      "collection_time": "60s",
-      "proxy_disabled": false
     }
   },
   "endpoints": [
@@ -187,7 +183,7 @@
       "method": "POST",
       "backend": [
         {
-          "url_pattern": "/participant",
+          "url_pattern": "/participants",
           "host": ["http://participants-service:8080"]
         }
       ]

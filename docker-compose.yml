@@ -13,6 +13,9 @@ services:
   calendars-service:
     build: ./calendars-service/
     container_name: calendars-service
+    env_file: "./calendars-service/.env"
+    volumes:
+      - ./calendars-service:/app 
     networks:
       - my-network
 
