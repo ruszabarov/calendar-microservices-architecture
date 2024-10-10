@@ -20,17 +20,15 @@ func GetMeetingsByIds(ids []string) []Meeting {
 	resp, err := httpClient.Get(url)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return nil
+		return []Meeting{}
 	}
 	defer resp.Body.Close()
 
 	var data []Meeting
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		fmt.Println("Decode Error:", err)
-		return nil
+		return []Meeting{}
 	}
-
-	fmt.Printf("Received Data: %+v\n", data)
 
 	return data
 }

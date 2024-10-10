@@ -13,6 +13,7 @@ func initializeRouter() *mux.Router {
 	router.HandleFunc("/calendars/{id}", UpdateCalendarById).Methods("PUT")
 	router.HandleFunc("/calendars/{id}", DeleteCalendarById).Methods("DELETE")
 	router.HandleFunc("/calendars/{id}/meetings", AddMeetingsToCalendar).Methods("POST")
+	router.HandleFunc("/calendars/{id}/meetings", RemoveMeetingsFromCalendar).Methods("DELETE")
 
 	return router
 }

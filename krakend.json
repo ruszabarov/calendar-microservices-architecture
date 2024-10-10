@@ -80,6 +80,16 @@
       ]
     },
     {
+      "endpoint": "/calendars/{calendarId}/meetings",
+      "method": "DELETE",
+      "backend": [
+        {
+          "url_pattern": "/calendars/{calendarId}/meetings",
+          "host": ["http://calendars-service:8080"]
+        }
+      ]
+    },
+    {
       "endpoint": "/meetings",
       "method": "GET",
       "backend": [

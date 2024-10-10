@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"strings"
@@ -31,18 +32,9 @@ func GetCalendars(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(calendarSummaries)
-
 	var calendars []Calendar
 	for _, calendarSummary := range calendarSummaries {
-		meetings := GetMeetingsByIds(calendarSummary.Meetings)
-		calendar := Calendar{
-			ID:       calendarSummary.ID,
-			Title:    calendarSummary.Title,
-			Details:  calendarSummary.Details,
-			Meetings: meetings,
-		}
-		calendars = append(calendars, calendar)
+		calendars = append(calendars, ConvertSummaryToFull(calendarSummary))
 	}
 
 	responseWrapper := map[string]interface{}{
@@ -65,54 +57,34 @@ func GetCalendars(w http.ResponseWriter, r *http.Request) {
 	log.Println("Success: GetCalendars")
 }
 
-func GetCalendarsByIds(w http.ResponseWriter, r *http.Request) {
-	idsParam := r.URL.Query().Get("ids")
-	if idsParam == "" {
-		http.Error(w, "Missing 'ids' query parameter", http.StatusBadRequest)
+func CreateCalendar(w http.ResponseWriter, r *http.Request) {
+	var calendarSummary CalendarSummary
+	err := json.NewDecoder(r.Body).Decode(&calendarSummary)
+	if err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	ids := strings.Split(idsParam, ",")
-	if len(ids) == 0 {
-		http.Error(w, "No IDs provided", http.StatusBadRequest)
-		return
+	if calendarSummary.ID == "" {
+		calendarSummary.ID = uuid.New().String()
 	}
 
 	collection := database.Collection("calendars")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{
-		"_id": bson.M{
-			"$in": ids,
-		},
-	}
-
-	cursor, err := collection.Find(ctx, filter)
+	_, err = collection.InsertOne(ctx, calendarSummary)
 	if err != nil {
-		http.Error(w, "Error fetching calendars", http.StatusInternalServerError)
-		return
-	}
-	defer cursor.Close(ctx)
-
-	var calendars []Calendar
-	if err = cursor.All(ctx, &calendars); err != nil {
-		http.Error(w, "Error decoding calendars", http.StatusInternalServerError)
+		http.Error(w, "Error inserting calendarSummary", http.StatusInternalServerError)
 		return
 	}
 
 	responseWrapper := map[string]interface{}{
-		"data": calendars,
-	}
-
-	responseData, err := json.Marshal(responseWrapper)
-	if err != nil {
-		http.Error(w, "Error marshalling response", http.StatusInternalServerError)
-		return
+		"data": ConvertSummaryToFull(calendarSummary),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(responseData)
+	json.NewEncoder(w).Encode(responseWrapper)
 }
 
 func UpdateCalendarById(w http.ResponseWriter, r *http.Request) {
@@ -122,7 +94,7 @@ func UpdateCalendarById(w http.ResponseWriter, r *http.Request) {
 	var updatedCalendar Calendar
 	err := json.NewDecoder(r.Body).Decode(&updatedCalendar)
 	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
@@ -133,26 +105,26 @@ func UpdateCalendarById(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	update := bson.M{
-		"$set": updatedCalendar,
+		"$set": bson.M{
+			"title":   updatedCalendar.Title,
+			"details": updatedCalendar.Details,
+		},
 	}
 
-	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
+	var calendarSummary CalendarSummary
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&calendarSummary)
 	if err != nil {
-		http.Error(w, "Error updating calendar", http.StatusInternalServerError)
-		return
-	}
-
-	if result.MatchedCount == 0 {
-		http.Error(w, "Calendar not found", http.StatusNotFound)
+		respondWithError(w, http.StatusInternalServerError, "Error fetching updated calendar")
 		return
 	}
 
 	responseWrapper := map[string]interface{}{
-		"data": update,
+		"data": ConvertSummaryToFull(calendarSummary),
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseWrapper)
+	respondWithJSON(w, http.StatusOK, responseWrapper)
 }
 
 func DeleteCalendarById(w http.ResponseWriter, r *http.Request) {
@@ -165,7 +137,7 @@ func DeleteCalendarById(w http.ResponseWriter, r *http.Request) {
 
 	result, err := collection.DeleteOne(ctx, bson.M{"_id": id})
 	if err != nil {
-		http.Error(w, "Error deleting calendar", http.StatusInternalServerError)
+		respondWithError(w, http.StatusInternalServerError, "Error deleting calendar")
 		return
 	}
 
@@ -174,68 +146,33 @@ func DeleteCalendarById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"message": "Calendar deleted successfully",
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseWrapper)
-}
-
-func CreateCalendar(w http.ResponseWriter, r *http.Request) {
-	var calendar CalendarSummary
-	err := json.NewDecoder(r.Body).Decode(&calendar)
-	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
-		return
-	}
-
-	if calendar.ID == "" {
-		calendar.ID = uuid.New().String()
-	}
-
-	collection := database.Collection("calendars")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	_, err = collection.InsertOne(ctx, calendar)
-	if err != nil {
-		http.Error(w, "Error inserting calendar", http.StatusInternalServerError)
-		return
-	}
-
-	responseWrapper := map[string]interface{}{
-		"data": calendar,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseWrapper)
+	respondWithJSON(w, http.StatusOK, map[string]string{"message": "calendar successfully deleted"})
 }
 
 func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if id == "" {
-		http.Error(w, "Missing 'id' parameter", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
 	}
 
 	var meetingsToAdd []string
 	err := json.NewDecoder(r.Body).Decode(&meetingsToAdd)
 	if err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	if len(meetingsToAdd) == 0 {
-		http.Error(w, "No meetings provided to add", http.StatusBadRequest)
+		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
 		return
 	}
 
 	for _, meetingID := range meetingsToAdd {
 		_, err := uuid.Parse(meetingID)
 		if err != nil {
-			http.Error(w, "Invalid meeting ID: "+meetingID, http.StatusBadRequest)
+			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
 			return
 		}
 	}
@@ -252,21 +189,141 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	result, err := collection.UpdateOne(ctx, bson.M{"_id": id}, update)
-	if err != nil {
-		http.Error(w, "Error updating calendar", http.StatusInternalServerError)
-		return
-	}
+	var calendarSummary CalendarSummary
 
-	if result.MatchedCount == 0 {
-		http.Error(w, "Calendar not found", http.StatusNotFound)
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&calendarSummary)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching updated calendar")
 		return
 	}
 
 	responseWrapper := map[string]interface{}{
-		"data": update,
+		"data": ConvertSummaryToFull(calendarSummary),
 	}
 
+	respondWithJSON(w, http.StatusOK, responseWrapper)
+}
+
+func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	if id == "" {
+		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
+		return
+	}
+
+	var meetingsToRemove []string
+	err := json.NewDecoder(r.Body).Decode(&meetingsToRemove)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	if len(meetingsToRemove) == 0 {
+		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
+		return
+	}
+
+	for _, meetingID := range meetingsToRemove {
+		_, err := uuid.Parse(meetingID)
+		if err != nil {
+			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
+			return
+		}
+	}
+
+	collection := database.Collection("calendars")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	update := bson.M{
+		"$pull": bson.M{
+			"meetings": bson.M{
+				"$in": meetingsToRemove,
+			},
+		},
+	}
+
+	var calendarSummary CalendarSummary
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&calendarSummary)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching updated calendar")
+		return
+	}
+
+	responseWrapper := map[string]interface{}{
+		"data": ConvertSummaryToFull(calendarSummary),
+	}
+
+	respondWithJSON(w, http.StatusOK, responseWrapper)
+}
+
+func GetCalendarsByIds(w http.ResponseWriter, r *http.Request) {
+	idsParam := r.URL.Query().Get("ids")
+	if idsParam == "" {
+		respondWithError(w, http.StatusBadRequest, "Missing 'ids' query parameter")
+		return
+	}
+
+	ids := strings.Split(idsParam, ",")
+	if len(ids) == 0 {
+		respondWithError(w, http.StatusBadRequest, "No IDs provided")
+		return
+	}
+
+	collection := database.Collection("calendars")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": ids,
+		},
+	}
+
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching calendars")
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var calendars []Calendar
+	if err = cursor.All(ctx, &calendars); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error decoding calendars")
+		return
+	}
+
+	responseWrapper := map[string]interface{}{
+		"data": calendars,
+	}
+
+	respondWithJSON(w, http.StatusOK, responseWrapper)
+}
+
+func ConvertSummaryToFull(calendarSummary CalendarSummary) Calendar {
+	meetings := GetMeetingsByIds(calendarSummary.Meetings)
+	var calendar = Calendar{
+		ID:       calendarSummary.ID,
+		Title:    calendarSummary.Title,
+		Details:  calendarSummary.Details,
+		Meetings: meetings,
+	}
+
+	return calendar
+}
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseWrapper)
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
+}
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(payload)
 }
