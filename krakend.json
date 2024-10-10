@@ -5,7 +5,8 @@
       "level": "DEBUG",
       "syslog": false,
       "stdout": true
-    }
+    },
+    "return_error_msg": true
   },
   "endpoints": [
     {

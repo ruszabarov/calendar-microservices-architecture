@@ -2,6 +2,7 @@ version: "3"
 services:
   krakend:
     image: devopsfaith/krakend:watch
+    container_name: krakend
     volumes:
       - ".:/etc/krakend"
     ports:

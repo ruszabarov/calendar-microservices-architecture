@@ -1,7 +1,7 @@
 [build]
-cmd = "go build -o ./tmp/main ." # Command to build the Go app
-bin = "main"                     # Output binary file name
-full_bin = "./tmp/main"          # Full path to the binary
+cmd = "go build -o ./tmp/main ./src" # Command to build the Go app
+bin = "main"                         # Output binary file name
+full_bin = "./tmp/main"              # Full path to the binary
 
 [log]
 level = "debug"              # Log level
