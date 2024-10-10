@@ -11,6 +11,19 @@ services:
     networks:
       - my-network
 
+  express-server:
+    container_name: express-server
+    build:
+      context: ./express-server
+      dockerfile: Dockerfile
+    volumes:
+      - ./express-server:/app             
+      - ./react-app/build:/app/build      
+    ports:
+      - "3000:3000"
+    networks:
+      - my-network
+
   calendars-service:
     build: ./calendars-service/
     container_name: calendars-service
