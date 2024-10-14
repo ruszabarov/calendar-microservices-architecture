@@ -30,7 +30,7 @@ def get_participants():
 def get_participant(participant_id):
     participant = Participant.get(participant_id)
     if participant:
-        return jsonify(participant.to_dict()), 200
+        return jsonify({"data" : participant.to_dict()}), 200
     return jsonify({"error": "Participant not found"}), 404
 
 @app.route('/participants', methods=['POST'])
