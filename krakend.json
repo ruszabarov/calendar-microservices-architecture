@@ -27,21 +27,28 @@
           "url_pattern": "/calendars",
           "host": ["http://calendars-service:8080"]
         }
-      ]
+      ],
+      "extra_config": {
+        "validation/json-schema": {
+          "type": "object",
+          "required": ["title", "details", "meetings"],
+          "properties": {
+            "title": { "type": "string" },
+            "details": { "type": "string" },
+            "meetings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     },
     {
       "endpoint": "/calendars/{calendarId}",
       "method": "GET",
-      "backend": [
-        {
-          "url_pattern": "/calendars/{calendarId}",
-          "host": ["http://calendars-service:8080"]
-        }
-      ]
-    },
-    {
-      "endpoint": "/calendars/{calendarId}",
-      "method": "POST",
       "backend": [
         {
           "url_pattern": "/calendars/{calendarId}",
@@ -57,7 +64,23 @@
           "url_pattern": "/calendars/{calendarId}",
           "host": ["http://calendars-service:8080"]
         }
-      ]
+      ],
+      "extra_config": {
+        "validation/json-schema": {
+          "type": "object",
+          "properties": {
+            "title": { "type": "string" },
+            "details": { "type": "string" },
+            "meetings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     },
     {
       "endpoint": "/calendars/{calendarId}",
@@ -70,29 +93,64 @@
       ]
     },
     {
-      "endpoint": "/calendars/{calendarId}/meetings",
+      "endpoint": "/calendars/{calendarId}/addMeetings",
       "method": "POST",
       "backend": [
         {
-          "url_pattern": "/calendars/{calendarId}/meetings",
+          "url_pattern": "/calendars/{calendarId}/addMeetings",
           "host": ["http://calendars-service:8080"]
         }
-      ]
+      ],
+      "extra_config": {
+        "validation/json-schema": {
+          "type": "object",
+          "required": ["meetings"],
+          "properties": {
+            "meetings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     },
     {
-      "endpoint": "/calendars/{calendarId}/meetings",
-      "method": "DELETE",
+      "endpoint": "/calendars/{calendarId}/removeMeetings",
+      "method": "POST",
       "backend": [
         {
-          "url_pattern": "/calendars/{calendarId}/meetings",
+          "url_pattern": "/calendars/{calendarId}/removeMeetings",
           "host": ["http://calendars-service:8080"]
         }
-      ]
+      ],
+      "extra_config": {
+        "validation/json-schema": {
+          "type": "object",
+          "required": ["meetings"],
+          "properties": {
+            "meetings": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
     },
     {
       "endpoint": "/meetings",
       "method": "GET",
       "backend": [
+        {
+          "url_pattern": "/meeting-summaries",
+          "host": ["http://meetings-service:8080"],
+          "whitelist": ["http//:calendars-service"]
+        },
         {
           "url_pattern": "/meetings",
           "host": ["http://meetings-service:8080"]

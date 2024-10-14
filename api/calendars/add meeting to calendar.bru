@@ -5,13 +5,15 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}/calendars/ee143b10-7287-46f0-9dbc-428769cb776a/meetings
+  url: {{BASE_URL}}/calendars/11aa0109-d59b-4342-b134-69131abc200d/addMeetings
   body: json
   auth: none
 }
 
 body:json {
-  [
-    "9edfbb08-0092-4047-96bf-653457d938d8"
-  ]
+  {
+    "meetings": [ 
+      "9edfbb08-0092-4047-96bf-653457d938d8"
+    ]
+  }
 }

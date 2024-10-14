@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -157,19 +158,19 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var meetingsToAdd []string
-	err := json.NewDecoder(r.Body).Decode(&meetingsToAdd)
+	var request CalendarSummary
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	if len(meetingsToAdd) == 0 {
+	if len(request.Meetings) == 0 {
 		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
 		return
 	}
 
-	for _, meetingID := range meetingsToAdd {
+	for _, meetingID := range request.Meetings {
 		_, err := uuid.Parse(meetingID)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
@@ -184,7 +185,7 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 	update := bson.M{
 		"$addToSet": bson.M{
 			"meetings": bson.M{
-				"$each": meetingsToAdd,
+				"$each": request.Meetings,
 			},
 		},
 	}
@@ -213,19 +214,19 @@ func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var meetingsToRemove []string
+	var meetingsToRemove CalendarSummary
 	err := json.NewDecoder(r.Body).Decode(&meetingsToRemove)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	if len(meetingsToRemove) == 0 {
+	if len(meetingsToRemove.Meetings) == 0 {
 		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
 		return
 	}
 
-	for _, meetingID := range meetingsToRemove {
+	for _, meetingID := range meetingsToRemove.Meetings {
 		_, err := uuid.Parse(meetingID)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
