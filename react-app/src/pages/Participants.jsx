@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Participants = () => {
@@ -71,7 +71,7 @@ const Participants = () => {
 
     // Handles the change
     const handleInputChange = (e) => {
-        setEditingElement({...editingElement, [e.target.name]: e.target.value});
+        setEditingElement({ ...editingElement, [e.target.name]: e.target.value });
     };
 
 
@@ -91,11 +91,11 @@ const Participants = () => {
         <div>
             <div className="form">
                 <input name="id" value={editingElement.id} onChange={handleInputChange}
-                       placeholder="Participant UUID"/>
+                    placeholder="Participant UUID" />
                 <input name="name" value={editingElement.name} onChange={handleInputChange}
-                       placeholder="Name (max 600 characters)"/>
+                    placeholder="Name (max 600 characters)" />
                 <input name="email" value={editingElement.email} onChange={handleInputChange}
-                       placeholder="Email"/>
+                    placeholder="Email" />
             </div>
 
 
@@ -105,16 +105,25 @@ const Participants = () => {
 
 
             {participants.map((participant, index) => (
-                <div key={index} style={{marginBottom: '20px'}}>
-                    <span>
-                        <strong>UUID:</strong> {participant.id} |
-                        <strong> Name:</strong> {participant.name} |
-                        <strong> Email:</strong> {participant.email} |
-                    </span>
-                    <button onClick={() => handleEdit(index, participant)}>Edit</button>
-                    <button onClick={() => handleDelete(participant.id)}>Delete</button>
+                <div key={index} style={{
+                    marginBottom: '20px',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    backgroundColor: '#f9f9f9'
+                }}>
+                    <p><strong>UUID:</strong> {participant.id}</p>
+                    <p><strong>Name:</strong> {participant.name}</p>
+                    <p><strong>Email:</strong> {participant.email}</p>
+
+                    <div style={{ marginTop: '10px' }}>
+                        <button onClick={() => handleEdit(index, participant)} style={{ marginRight: '10px' }}>Edit</button>
+                        <button onClick={() => handleDelete(participant.id)}>Delete</button>
+                    </div>
+                    <hr />
                 </div>
             ))}
+
         </div>
     );
 };

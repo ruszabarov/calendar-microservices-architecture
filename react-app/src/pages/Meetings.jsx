@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Meetings = () => {
@@ -52,7 +52,7 @@ const Meetings = () => {
     };
 
     const handleInputChange = (e) => {
-        setEditingElement({...editingElement, [e.target.name]: e.target.value});
+        setEditingElement({ ...editingElement, [e.target.name]: e.target.value });
     };
 
     const handleParticipantUUIDChange = (e) => {
@@ -120,17 +120,17 @@ const Meetings = () => {
         <div>
             <div className="form">
                 <input name="uuid" value={editingElement.id} onChange={handleInputChange}
-                       placeholder="Meeting UUID"/>
+                    placeholder="Meeting UUID" />
                 <input name="title" value={editingElement.title} onChange={handleInputChange}
-                       placeholder="Title"/>
+                    placeholder="Title" />
                 <input name="dateTime" value={editingElement.dateTime} onChange={handleInputChange}
-                       placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)"/>
+                    placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)" />
                 <input name="location" value={editingElement.location} onChange={handleInputChange}
-                       placeholder="Location"/>
+                    placeholder="Location" />
                 <textarea name="details" value={editingElement.details} onChange={handleInputChange}
-                          placeholder="Details"/>
+                    placeholder="Details" />
                 <input name="participantIds" value={editingElement.participantIds} onChange={handleInputChange}
-                       placeholder="Participant ID"/>
+                    placeholder="Participant ID" />
             </div>
 
             <button onClick={isEditing ? handleUpdate : handleCreate}>
@@ -140,68 +140,77 @@ const Meetings = () => {
             <div className="participant-form">
                 <h4>Add Participant by UUID</h4>
                 <input name="participantUUID" value={newParticipantUUID} onChange={handleParticipantUUIDChange}
-                       placeholder="Participant UUID"/>
+                    placeholder="Participant UUID" />
                 <button onClick={handleAddParticipant}>Add Participant</button>
             </div>
 
-            <div className="attachment-form" style={{marginBottom: '50px'}}>
+            <div className="attachment-form" style={{ marginBottom: '50px' }}>
                 <h4>Add Attachment by UUID</h4>
                 <input name="attachmentUUID" value={newAttachmentUUID} onChange={handleAttachmentUUIDChange}
-                       placeholder="Attachment UUID"/>
+                    placeholder="Attachment UUID" />
                 <button onClick={handleAddAttachment}>Add Attachment</button>
             </div>
 
             {meetings.map((meeting, index) => (
-                <div style={{marginBottom: '30px'}}>
-                    <hr/>
-                    <span>
-                        <strong>UUID:</strong> {meeting.id} | <strong>Title:</strong> {meeting.title} | <strong>Date & Time:</strong> {meeting.dateTime} | <strong>Location:</strong> {meeting.location} | <strong>Details:</strong> {meeting.details}
-                    </span>
-                    <br></br>
-                    {meeting.calendars.length > 0 &&
-                        <span style={{display: 'block'}}>
-                        Calendars:
-                        </span>
-                    }
-                    {meeting.calendars.map((calendar, index) => (
-                        <span style={{display: 'block', marginLeft: '20px'}}>
-                            <strong>UUID:</strong> {calendar.id} |
-                            <strong> Title:</strong> {calendar.title} |
-                            <strong> Details:</strong> {calendar.details} |
-                        </span>
-                    ))}
+                <div style={{
+                    marginBottom: '30px',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    backgroundColor: '#f9f9f9'
+                }} key={index}>
+                    <h3>{meeting.title}</h3>
+                    <p><strong>UUID:</strong> {meeting.id}</p>
+                    <p><strong>Date & Time:</strong> {meeting.dateTime}</p>
+                    <p><strong>Location:</strong> {meeting.location}</p>
+                    <p><strong>Details:</strong> {meeting.details}</p>
 
-                    {meeting.participants.length > 0 &&
-                        <span style={{display: 'block'}}>
-                            Participants:
-                        </span>
-                    }
+                    {meeting.calendars.length > 0 && (
+                        <>
+                            <h4>Calendars:</h4>
+                            {meeting.calendars.map((calendar, index) => (
+                                <div key={index} style={{ marginLeft: '20px' }}>
+                                    <p><strong>UUID:</strong> {calendar.id}</p>
+                                    <p><strong>Title:</strong> {calendar.title}</p>
+                                    <p><strong>Details:</strong> {calendar.details}</p>
+                                </div>
+                            ))}
+                        </>
+                    )}
 
-                    {meeting.participants.map((participant, index) => (
-                        <span style={{display: 'block', marginLeft: '20px'}}>
-                            <strong>UUID:</strong> {participant.id} |
-                            <strong> Name:</strong> {participant.name} |
-                            <strong> Email:</strong> {participant.email} |
-                        </span>
-                    ))}
-                    {meeting.attachments.length > 0 &&
-                        <span style={{display: 'block'}}>
-                            Attachments:
-                        </span>
-                    }
+                    {meeting.participants.length > 0 && (
+                        <>
+                            <h4>Participants:</h4>
+                            {meeting.participants.map((participant, index) => (
+                                <div key={index} style={{ marginLeft: '20px' }}>
+                                    <p><strong>UUID:</strong> {participant.id}</p>
+                                    <p><strong>Name:</strong> {participant.name}</p>
+                                    <p><strong>Email:</strong> {participant.email}</p>
+                                </div>
+                            ))}
+                        </>
+                    )}
 
-                    {meeting.attachments.map((attachment, index) => (
-                        <span style={{display: 'block', marginLeft: '20px'}}>
-                            <strong>UUID:</strong> {attachment.id} |
-                            <strong> URL:</strong> {attachment.url} |
-                        </span>
-                    ))}
-                    <button onClick={() => handleEdit(index, meeting)}>Edit</button>
-                    <button onClick={() => handleDelete(index, meeting.id)}>Delete</button>
-                    <hr/>
+                    {meeting.attachments.length > 0 && (
+                        <>
+                            <h4>Attachments:</h4>
+                            {meeting.attachments.map((attachment, index) => (
+                                <div key={index} style={{ marginLeft: '20px' }}>
+                                    <p><strong>UUID:</strong> {attachment.id}</p>
+                                    <p><strong>URL:</strong> {attachment.url}</p>
+                                </div>
+                            ))}
+                        </>
+                    )}
+
+                    <div style={{ marginTop: '10px' }}>
+                        <button onClick={() => handleEdit(index, meeting)} style={{ marginRight: '10px' }}>Edit</button>
+                        <button onClick={() => handleDelete(index, meeting.id)}>Delete</button>
+                    </div>
+                    <hr />
                 </div>
-            ))
-            }
+            ))}
+
         </div>
     )
 }

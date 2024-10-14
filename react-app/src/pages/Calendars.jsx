@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 const Calendars = () => {
@@ -78,7 +78,7 @@ const Calendars = () => {
 
     // Handles the change
     const handleInputChange = (e) => {
-        setEditingElement({...editingElement, [e.target.name]: e.target.value});
+        setEditingElement({ ...editingElement, [e.target.name]: e.target.value });
     };
 
     // Resets form
@@ -114,55 +114,61 @@ const Calendars = () => {
     return (
         <div>
             <div className="form">
-                <input name="uuid" value={editingElement.id} onChange={handleInputChange} placeholder="Calendar UUID"/>
+                <input name="uuid" value={editingElement.id} onChange={handleInputChange} placeholder="Calendar UUID" />
                 <input name="title" value={editingElement.title} onChange={handleInputChange}
-                       placeholder="Title (max 2000 characters)"/>
+                    placeholder="Title (max 2000 characters)" />
                 <textarea name="details" value={editingElement.details} onChange={handleInputChange}
-                          placeholder="Details (max 10000 characters)"/>
+                    placeholder="Details (max 10000 characters)" />
                 <input name="meetingId" value={editingElement.meetingId} onChange={handleInputChange}
-                       placeholder="Meeting ID"/>
+                    placeholder="Meeting ID" />
             </div>
 
             <button onClick={handleCreateOrUpdate}>
                 {isEditing ? 'Save Changes' : 'Create'}
             </button>
 
-            <div className="meeting-form" style={{marginBottom: '50px'}}>
+            <div className="meeting-form" style={{ marginBottom: '50px' }}>
                 <h4>Add Meeting by UUID</h4>
                 <input name="meetingUUID" value={newMeetingUUID} onChange={handleMeetingUUIDChange}
-                       placeholder="Participant UUID"/>
+                    placeholder="Participant UUID" />
                 <button onClick={handleAddMeeting}>Add Meeting</button>
             </div>
 
             {calendars.map((calendar, index) => (
-                <div key={index} style={{marginBottom: '30px'}}>
-                    <hr/>
-                    <span>
-                        <strong>UUID:</strong> {calendar.id} | 
-                        <strong> Title:</strong> {calendar.title} | 
-                        <strong> Details:</strong> {calendar.details} |
-                    </span>
+                <div key={index} style={{
+                    marginBottom: '30px',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    backgroundColor: '#f9f9f9'
+                }}>
+                    <p><strong>UUID:</strong> {calendar.id}</p>
+                    <p><strong>Title:</strong> {calendar.title}</p>
+                    <p><strong>Details:</strong> {calendar.details}</p>
 
                     {calendar.meetings && calendar.meetings.length > 0 && (
-                        <span style={{display: 'block', marginTop: '10px'}}>
-                            <strong>Meetings:</strong>
-                        </span>
+                        <>
+                            <h4>Meetings:</h4>
+                            {calendar.meetings.map((meeting, index) => (
+                                <div key={index} style={{ marginLeft: '20px', marginBottom: '10px' }}>
+                                    <p><strong>UUID:</strong> {meeting.id}</p>
+                                    <p><strong>Title:</strong> {meeting.title}</p>
+                                    <p><strong>Date & Time:</strong> {meeting.dateTime}</p>
+                                    <p><strong>Location:</strong> {meeting.location}</p>
+                                    <p><strong>Details:</strong> {meeting.details}</p>
+                                </div>
+                            ))}
+                        </>
                     )}
-                    {calendar.meetings && calendar.meetings.map((meeting, index) => (
-                        <span key={index} style={{display: 'block', marginLeft: '20px'}}>
-                            <strong>UUID:</strong> {meeting.id} | 
-                            <strong> Title:</strong> {meeting.title} | 
-                            <strong> Date & Time:</strong> {meeting.dateTime} | 
-                            <strong> Location:</strong> {meeting.location} | 
-                            <strong> Details:</strong> {meeting.details}
-                        </span>
-                    ))}
 
-                    <button onClick={() => handleEdit(index, calendar)}>Edit</button>
-                    <button onClick={() => handleDelete(calendar.id)}>Delete</button>
-                    <hr/>
+                    <div style={{ marginTop: '10px' }}>
+                        <button onClick={() => handleEdit(index, calendar)} style={{ marginRight: '10px' }}>Edit</button>
+                        <button onClick={() => handleDelete(calendar.id)}>Delete</button>
+                    </div>
+                    <hr />
                 </div>
             ))}
+
         </div>
     );
 };
