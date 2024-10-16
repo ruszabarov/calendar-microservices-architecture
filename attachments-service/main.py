@@ -1,18 +1,19 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-import requests
+from typing import List, Optional
 
 import crud
 import models
 import schemas
 from database import SessionLocal, engine
 
-# Creating the database tables
+# Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(redirect_slashes=True)
 
 
+# Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -21,7 +22,25 @@ def get_db():
         db.close()
 
 
-MEETINGS_MICROSERVICE_URL = "http://meetings-service:8080"
+@app.post("/attachments/by-ids", response_model=List[schemas.Attachment])
+def get_attachments_by_ids(
+        request: schemas.AttachmentsIds,
+        db: Session = Depends(get_db)
+):
+    attachments = crud.get_attachments_by_ids(db, request.attachmentsIds)
+    return attachments
+
+
+
+# Get All Attachments
+@app.get("/attachments", response_model=List[schemas.Attachment])
+def read_attachments(
+        skip: int = 0,
+        limit: int = 100,
+        db: Session = Depends(get_db)
+):
+    attachments = crud.get_attachments(db, skip=skip, limit=limit)
+    return attachments
 
 
 # Create Attachment with specified attachmentsId
@@ -44,35 +63,19 @@ def create_attachment_with_id(
     )
     db_attachment = crud.create_attachment(db, new_attachment)
 
-    # Update the Meeting's List of Attachment Ids
-    try:
-        response = requests.post(
-            f"{MEETINGS_MICROSERVICE_URL}/meetings/{attachment.meetingId}/attachments",
-            json={"attachmentsId": db_attachment.attachmentsId},
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        # Rollback if the meeting update fails
-        db.delete(db_attachment)
-        db.commit()
-        raise HTTPException(status_code=400, detail="Failed to update Meetings service") from e
     return db_attachment
 
 
 # Get Attachment by ID
 @app.get("/attachments/{attachmentsId}", response_model=schemas.Attachment)
-def read_attachment(attachmentsId: str, db: Session = Depends(get_db)):
+def read_attachment(
+        attachmentsId: str,
+        db: Session = Depends(get_db)
+):
     db_attachment = crud.get_attachment(db, attachmentsId)
     if db_attachment is None:
         raise HTTPException(status_code=404, detail="Attachment not found")
     return db_attachment
-
-
-# Get All Attachments
-@app.get("/attachments", response_model=list[schemas.Attachment])
-def read_attachments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    attachments = crud.get_attachments(db, skip=skip, limit=limit)
-    return attachments
 
 
 # Update Attachment
@@ -90,17 +93,12 @@ def update_attachment(
 
 # Delete Attachment
 @app.delete("/attachments/{attachmentsId}")
-def delete_attachment(attachmentsId: str, db: Session = Depends(get_db)):
+def delete_attachment(
+        attachmentsId: str,
+        db: Session = Depends(get_db)
+):
     db_attachment = crud.get_attachment(db, attachmentsId)
     if db_attachment is None:
         raise HTTPException(status_code=404, detail="Attachment not found")
-    # Update the Meeting's List of Attachment Ids
-    try:
-        response = requests.delete(
-            f"{MEETINGS_MICROSERVICE_URL}/meetings/{db_attachment.meetingId}/attachments/{attachmentsId}"
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise HTTPException(status_code=400, detail="Failed to update Meetings service") from e
     crud.delete_attachment(db, attachmentsId)
     return {"detail": "Attachment deleted"}
