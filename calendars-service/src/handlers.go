@@ -38,11 +38,7 @@ func GetCalendars(w http.ResponseWriter, r *http.Request) {
 		calendars = append(calendars, ConvertSummaryToFull(calendarSummary))
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": calendars,
-	}
-
-	responseData, err := json.Marshal(responseWrapper)
+	responseData, err := json.Marshal(calendars)
 	if err != nil {
 		http.Error(w, "Error marshalling response", http.StatusInternalServerError)
 		return
@@ -80,12 +76,8 @@ func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": ConvertSummaryToFull(calendarSummary),
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responseWrapper)
+	json.NewEncoder(w).Encode(calendarSummary)
 }
 
 func UpdateCalendarById(w http.ResponseWriter, r *http.Request) {
@@ -121,11 +113,7 @@ func UpdateCalendarById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": ConvertSummaryToFull(calendarSummary),
-	}
-
-	respondWithJSON(w, http.StatusOK, responseWrapper)
+	respondWithJSON(w, http.StatusOK, calendarSummary)
 }
 
 func DeleteCalendarById(w http.ResponseWriter, r *http.Request) {
@@ -199,11 +187,7 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": ConvertSummaryToFull(calendarSummary),
-	}
-
-	respondWithJSON(w, http.StatusOK, responseWrapper)
+	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(calendarSummary))
 }
 
 func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
@@ -214,19 +198,19 @@ func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var meetingsToRemove CalendarSummary
-	err := json.NewDecoder(r.Body).Decode(&meetingsToRemove)
+	var request CalendarSummary
+	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
-	if len(meetingsToRemove.Meetings) == 0 {
+	if len(request.Meetings) == 0 {
 		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
 		return
 	}
 
-	for _, meetingID := range meetingsToRemove.Meetings {
+	for _, meetingID := range request.Meetings {
 		_, err := uuid.Parse(meetingID)
 		if err != nil {
 			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
@@ -241,7 +225,7 @@ func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
 	update := bson.M{
 		"$pull": bson.M{
 			"meetings": bson.M{
-				"$in": meetingsToRemove,
+				"$in": request.Meetings,
 			},
 		},
 	}
@@ -255,11 +239,7 @@ func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": ConvertSummaryToFull(calendarSummary),
-	}
-
-	respondWithJSON(w, http.StatusOK, responseWrapper)
+	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(calendarSummary))
 }
 
 func GetCalendarsByIds(w http.ResponseWriter, r *http.Request) {
@@ -292,17 +272,13 @@ func GetCalendarsByIds(w http.ResponseWriter, r *http.Request) {
 	}
 	defer cursor.Close(ctx)
 
-	var calendars []Calendar
-	if err = cursor.All(ctx, &calendars); err != nil {
+	var calendarSummaries []CalendarSummary
+	if err = cursor.All(ctx, &calendarSummaries); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error decoding calendars")
 		return
 	}
 
-	responseWrapper := map[string]interface{}{
-		"data": calendars,
-	}
-
-	respondWithJSON(w, http.StatusOK, responseWrapper)
+	respondWithJSON(w, http.StatusOK, calendarSummaries)
 }
 
 func ConvertSummaryToFull(calendarSummary CalendarSummary) Calendar {

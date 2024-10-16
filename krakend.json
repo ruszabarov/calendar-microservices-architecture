@@ -12,8 +12,12 @@
     {
       "endpoint": "/calendars",
       "method": "GET",
+      "input_query_strings": ["ids"],
+      "output_encoding": "json-collection",
       "backend": [
         {
+          "encoding": "json",
+          "is_collection": true,
           "url_pattern": "/calendars",
           "host": ["http://calendars-service:8080"]
         }
@@ -145,13 +149,12 @@
     {
       "endpoint": "/meetings",
       "method": "GET",
+      "output_encoding": "json-collection",
+      "input_query_strings": ["ids"],
       "backend": [
         {
-          "url_pattern": "/meeting-summaries",
-          "host": ["http://meetings-service:8080"],
-          "whitelist": ["http//:calendars-service"]
-        },
-        {
+          "encoding": "json",
+          "is_collection": true,
           "url_pattern": "/meetings",
           "host": ["http://meetings-service:8080"]
         }

@@ -1,0 +1,20 @@
+meta {
+  name: update a meeting
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/meetings/2d96d9d8-c599-46f8-a6ab-d948eeb9d61e
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "New title",
+    "details": "Discussing the roadmap and deliverables for the new project.",
+    "datetime": "2024-10-15T09:30:00Z",
+    "location": "Conference Room 5B"
+  }
+}

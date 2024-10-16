@@ -12,7 +12,7 @@ var httpClient = &http.Client{
 	Timeout: time.Second * 10,
 }
 
-func GetMeetingsByIds(ids []string) []Meeting {
+func GetMeetingsByIds(ids []string) []MeetingSummary {
 	idsParam := strings.Join(ids, ",")
 
 	url := fmt.Sprintf("http://krakend:8080/meetings?ids=%s", idsParam)
@@ -20,14 +20,14 @@ func GetMeetingsByIds(ids []string) []Meeting {
 	resp, err := httpClient.Get(url)
 	if err != nil {
 		fmt.Println("Error:", err)
-		return []Meeting{}
+		return []MeetingSummary{}
 	}
 	defer resp.Body.Close()
 
-	var data []Meeting
+	var data []MeetingSummary
 	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		fmt.Println("Decode Error:", err)
-		return []Meeting{}
+		return []MeetingSummary{}
 	}
 
 	return data

@@ -36,6 +36,9 @@ services:
   meetings-service:
     build: ./meetings-service/
     container_name: meetings-service
+    env_file: "./meetings-service/.env"
+    volumes:
+      - ./meetings-service:/app
     networks:
       - my-network
 
