@@ -138,32 +138,13 @@ func DeleteCalendarById(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, map[string]string{"message": "calendar successfully deleted"})
 }
 
-func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
+func AddMeetingToCalendar(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	calendarId := vars["calendarId"]
+	meetingId := vars["meetingId"]
+	if calendarId == "" || meetingId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request CalendarSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Meetings) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
-		return
-	}
-
-	for _, meetingID := range request.Meetings {
-		_, err := uuid.Parse(meetingID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
-			return
-		}
 	}
 
 	collection := database.Collection("calendars")
@@ -172,16 +153,14 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$addToSet": bson.M{
-			"meetings": bson.M{
-				"$each": request.Meetings,
-			},
+			"meetings": meetingId,
 		},
 	}
 
 	var calendarSummary CalendarSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&calendarSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": calendarId}, update, opts).Decode(&calendarSummary)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated calendar")
 		return
@@ -190,32 +169,13 @@ func AddMeetingsToCalendar(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(calendarSummary))
 }
 
-func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
+func RemoveMeetingFromCalendar(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	calendarId := vars["calendarId"]
+	meetingId := vars["meetingId"]
+	if calendarId == "" || meetingId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request CalendarSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Meetings) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
-		return
-	}
-
-	for _, meetingID := range request.Meetings {
-		_, err := uuid.Parse(meetingID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+meetingID)
-			return
-		}
 	}
 
 	collection := database.Collection("calendars")
@@ -224,16 +184,14 @@ func RemoveMeetingsFromCalendar(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$pull": bson.M{
-			"meetings": bson.M{
-				"$in": request.Meetings,
-			},
+			"meetings": meetingId,
 		},
 	}
 
 	var calendarSummary CalendarSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&calendarSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": calendarId}, update, opts).Decode(&calendarSummary)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated calendar")
 		return

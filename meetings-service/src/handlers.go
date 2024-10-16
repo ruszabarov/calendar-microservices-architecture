@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -133,6 +134,69 @@ func DeleteMeetingById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"message": "meeting successfully deleted"})
+}
+
+func AddCalendarToMeeting(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	meetingId := vars["meetingId"]
+	calendarId := vars["calendarId"]
+	if meetingId == "" || calendarId == "" {
+		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
+		return
+	}
+
+	collection := database.Collection("meetings")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	update := bson.M{
+		"$addToSet": bson.M{
+			"calendars": calendarId,
+		},
+	}
+
+	var meetingSummary MeetingSummary
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
+}
+
+func RemoveCalendarFromMeeting(w http.ResponseWriter, r *http.Request) {
+	log.Println("hello world!")
+	vars := mux.Vars(r)
+	meetingId := vars["meetingId"]
+	calendarId := vars["calendarId"]
+	if meetingId == "" || calendarId == "" {
+		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
+		return
+	}
+
+	collection := database.Collection("meetings")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	update := bson.M{
+		"$pull": bson.M{
+			"calendars": calendarId,
+		},
+	}
+
+	var meetingSummary MeetingSummary
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
 }
 
 func AddParticipantsToMeeting(w http.ResponseWriter, r *http.Request) {

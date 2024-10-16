@@ -97,54 +97,46 @@
       ]
     },
     {
-      "endpoint": "/calendars/{calendarId}/addMeetings",
-      "method": "POST",
+      "endpoint": "/calendars/{calendarId}/addMeeting/{meetingId}",
+      "method": "GET",
       "backend": [
         {
-          "url_pattern": "/calendars/{calendarId}/addMeetings",
+          "method": "GET",
+          "url_pattern": "/calendars/{calendarId}/addMeeting/{meetingId}",
           "host": ["http://calendars-service:8080"]
-        }
-      ],
-      "extra_config": {
-        "validation/json-schema": {
-          "type": "object",
-          "required": ["meetings"],
-          "properties": {
-            "meetings": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "uniqueItems": true
+        },
+        {
+          "url_pattern": "/meetings/{meetingId}/addCalendar/{calendarId}",
+          "host": ["http://meetings-service:8080"],
+          "method": "GET",
+          "extra_config": {
+            "krakend/proxy": {
+              "ignore_response": true
             }
           }
         }
-      }
+      ]
     },
     {
-      "endpoint": "/calendars/{calendarId}/removeMeetings",
-      "method": "POST",
+      "endpoint": "/calendars/{calendarId}/removeMeeting/{meetingId}",
+      "method": "GET",
       "backend": [
         {
-          "url_pattern": "/calendars/{calendarId}/removeMeetings",
+          "method": "GET",
+          "url_pattern": "/calendars/{calendarId}/removeMeeting/{meetingId}",
           "host": ["http://calendars-service:8080"]
-        }
-      ],
-      "extra_config": {
-        "validation/json-schema": {
-          "type": "object",
-          "required": ["meetings"],
-          "properties": {
-            "meetings": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "uniqueItems": true
+        },
+        {
+          "url_pattern": "/meeting/{meetingId}/removeCalendar/{calendarId}",
+          "host": ["http://meetings-service:8080"],
+          "method": "GET",
+          "extra_config": {
+            "krakend/proxy": {
+              "ignore_response": true
             }
           }
         }
-      }
+      ]
     },
     {
       "endpoint": "/meetings",

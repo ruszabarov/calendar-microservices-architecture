@@ -4,16 +4,8 @@ meta {
   seq: 5
 }
 
-post {
-  url: {{BASE_URL}}/calendars/19e3d9b2-3699-402d-aaa9-f663e67fb9ab/addMeetings
-  body: json
+get {
+  url: {{BASE_URL}}/calendars/bd974b83-336e-4d20-a07f-578c83013522/addMeeting/491d68a0-86b4-4889-8daf-e5156304dfe8
+  body: none
   auth: none
-}
-
-body:json {
-  {
-    "meetings": [ 
-      "3959e832-6414-4e53-a2bc-a50da857f25b"
-    ]
-  }
 }
