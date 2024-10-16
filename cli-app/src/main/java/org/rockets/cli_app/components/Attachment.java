@@ -32,7 +32,7 @@ public class Attachment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Attachment attachment = (Attachment) o;
-        return Objects.equals(attachmentId, attachment.getAttachmentId());
+        return Objects.equals(attachmentId, attachment.attachmentId);
     }
 
     @Override

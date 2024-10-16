@@ -12,13 +12,10 @@ public class Meeting {
     private String details;
     private List<Participant> participants = new ArrayList<>();
     private List<Attachment> attachments = new ArrayList<>();
-    ;
-
     private List<Calendar> calendars = new ArrayList<>();
-    ;
 
-    public Meeting(String uuid) {
-        this.meetingId = uuid;
+    public Meeting(String meetingId) {
+        this.meetingId = meetingId;
     }
 
     public Meeting(String meetingId, String title, String dateTime, String location, String details) {
@@ -81,48 +78,42 @@ public class Meeting {
         this.attachments = attachments;
     }
 
-    // Adds ParticipantID
-    public void addParticipant(Participant participant) {
-        if (participant.getParticipantId() != null && !participants.contains(participant)) {
-            participants.add(participant);
-        }
-    }
-
-    // Removes ParticipantID
-    public void removeParticipant(Participant participant) {
-        participants.remove(participant);
-    }
-
-    // Adds AttachmentId
-    public void addAttachment(Attachment attachment) {
-        if (!attachments.contains(attachment)) {
-            attachments.add(attachment);
-        }
-    }
-
-    // Removes AttachmentId
-    public void removeAttachment(Attachment attachment) {
-        attachments.remove(attachment);
-    }
-
     public List<Calendar> getCalendars() {
-        return this.calendars;
+        return calendars;
     }
 
     public void setCalendars(List<Calendar> calendars) {
         this.calendars = calendars;
     }
 
+    public void addParticipant(Participant participant) {
+        if (participant != null && participant.getParticipantId() != null && !participants.contains(participant)) {
+            participants.add(participant);
+        }
+    }
+
+    public void removeParticipant(Participant participant) {
+        participants.remove(participant);
+    }
+
+    public void addAttachment(Attachment attachment) {
+        if (attachment != null && attachment.getAttachmentId() != null && !attachments.contains(attachment)) {
+            attachments.add(attachment);
+        }
+    }
+
+    public void removeAttachment(Attachment attachment) {
+        attachments.remove(attachment);
+    }
+
     public void addCalendar(Calendar calendar) {
-        if (!this.calendars.contains(calendar)) {
-            this.calendars.add(calendar);
+        if (calendar != null && calendar.getCalendarId() != null && !calendars.contains(calendar)) {
+            calendars.add(calendar);
         }
     }
 
     public void removeCalendar(Calendar calendar) {
-        if (calendar != null) {
-            this.calendars.remove(calendar);
-        }
+        calendars.remove(calendar);
     }
 
     @Override
@@ -141,36 +132,6 @@ public class Meeting {
     @Override
     public String toString() {
         return "(Meeting) id: " + getMeetingId() + " | title: " + getTitle() + " | date: "
-                + getDateTime() + " | location: " + getLocation() + " | details: "
-                + getDetails();
+                + getDateTime() + " | location: " + getLocation() + " | details: " + getDetails();
     }
-
-    public String participantsToString() {
-        StringBuilder result = new StringBuilder("Participants:\n");
-        for (Participant p : getParticipants()) {
-            result.append("\t").append(p.toString()).append("\n");
-        }
-        return result.toString();
-    }
-
-    public String attachmentsToString() {
-        StringBuilder result = new StringBuilder("Attachments:\n");
-
-        for (Attachment a : getAttachments()) {
-            result.append("\t").append(a.toString()).append("\n");
-        }
-
-        return result.toString();
-    }
-
-    public String calendarsToString() {
-        StringBuilder result = new StringBuilder("Calendars:\n");
-
-        for (Calendar c : getCalendars()) {
-            result.append("\t").append(c.toString()).append("\n");
-        }
-
-        return result.toString();
-    }
-
 }

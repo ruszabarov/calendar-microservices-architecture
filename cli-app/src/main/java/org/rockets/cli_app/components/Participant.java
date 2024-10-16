@@ -42,7 +42,7 @@ public class Participant {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant participant = (Participant) o;
-        return Objects.equals(participantId, participant.getParticipantId());
+        return Objects.equals(participantId, participant.participantId);
     }
 
     @Override
