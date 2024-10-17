@@ -1,11 +1,20 @@
-# TODO: change the next line! define your base image
-FROM alpine
+# Use an official Python runtime as a parent image
+FROM python:3.9-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-# you setup here
+# Copy the requirements file into the container
+COPY requirements.txt .
 
+# Install the required packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code into the container
+COPY . .
+
+# Expose the port that the app runs on
 EXPOSE 8080
 
-# start your service here
-CMD ["tail", "-f", "/dev/null"]
+# Command to run the application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]

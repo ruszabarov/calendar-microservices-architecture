@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  attachments_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: attachments_service
+    expose:
+      - "8080"
+    networks:
+      - attachment_network
+
+  krakend:
+    image: devopsfaith/krakend
+    container_name: krakend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - attachments_service
+    volumes:
+      - /react-app/krakend.json:/etc/krakendkrakend.json
+    networks:
+      - attachment_network
+
+networks:
+  attachment_network:
+    driver: bridge
