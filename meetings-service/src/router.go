@@ -14,10 +14,10 @@ func initializeRouter() *mux.Router {
 	router.HandleFunc("/meetings/{id}", DeleteMeetingById).Methods("DELETE")
 	router.HandleFunc("/meetings/{meetingId}/addCalendar/{calendarId}", AddCalendarToMeeting).Methods("GET")
 	router.HandleFunc("/meetings/{meetingId}/removeCalendar/{calendarId}", RemoveCalendarFromMeeting).Methods("GET")
-	router.HandleFunc("/meetings/{id}/addParticipants", AddParticipantsToMeeting).Methods("POST")
-	router.HandleFunc("/meetings/{id}/removeParticipants", RemoveParticipantsFromMeeting).Methods("POST")
-	router.HandleFunc("/meetings/{id}/addAttachments", AddAttachmentsToMeeting).Methods("POST")
-	router.HandleFunc("/meetings/{id}/removeAttachments", RemoveAttachmentsFromMeeting).Methods("POST")
+	router.HandleFunc("/meetings/{meetingId}/addParticipant/{participantId}", AddParticipantToMeeting).Methods("GET")
+	router.HandleFunc("/meetings/{meetingId}/removeParticipant/{participantId}", RemoveParticipantFromMeeting).Methods("GET")
+	router.HandleFunc("/meetings/{meetingId}/addAttachment/{attachmentId}", AddAttachmentToMeeting).Methods("GET")
+	router.HandleFunc("/meetings/{meetingId}/removeAttachment/{attachmentId}", RemoveAttachmentFromMeeting).Methods("GET")
 
 	return router
 }
