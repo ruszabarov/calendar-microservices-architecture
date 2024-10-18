@@ -53,7 +53,7 @@ def create_participant():
     participant = Participant.create(participant_id, data['name'], data['email'])
     
     if participant:
-        return jsonify({"message": "Successfully created participant"}), 201
+        return jsonify(participant.to_dict()), 200
     return jsonify({"error": "Could not create participant"}), 400
 
 
