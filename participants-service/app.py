@@ -21,12 +21,10 @@ def get_participants():
     if ids:
         participant_ids = ids.split(',')
         participants = Participant.get_multiple(participant_ids)
-        # Fix: Wrap the list in a dictionary with the key 'participants'
-        return jsonify({"participants": [p.to_dict() for p in participants if p is not None]}), 200
+        return jsonify([p.to_dict() for p in participants if p is not None]), 200
     else:
         participants = Participant.get_all()
-        # Fix: Wrap the list in a dictionary with the key 'participants'
-        return jsonify({"participants": [p.to_dict() for p in participants]}), 200
+        return jsonify([p.to_dict() for p in participants]), 200
 
 
 @app.route('/participants/<participant_id>', methods=['GET'])
