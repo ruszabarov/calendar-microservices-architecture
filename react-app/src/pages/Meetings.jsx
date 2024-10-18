@@ -62,9 +62,7 @@ const Meetings = () => {
     const handleAddParticipant = async () => {
         if (newParticipantUUID) {
             try {
-                await axios.post(`/api/meetings/${editingElement.id}/participants`,
-                    [newParticipantUUID]
-                );
+                await axios.post(`/api/meetings/${editingElement.id}/addParticipant/${newParticipantUUID}`);
                 fetchMeetings();
                 setNewParticipantUUID('');
             } catch (error) {
@@ -80,9 +78,7 @@ const Meetings = () => {
     const handleAddAttachment = async () => {
         if (newAttachmentUUID) {
             try {
-                await axios.post(`/api/meetings/${editingElement.id}/attachments`,
-                    [newAttachmentUUID]
-                );
+                await axios.post(`/api/meetings/${editingElement.id}/addAttachment/${newAttachmentUUID}`);
                 fetchMeetings();
                 setNewAttachmentUUID('');
             } catch (error) {
