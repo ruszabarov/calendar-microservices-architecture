@@ -300,8 +300,12 @@
     {
       "endpoint": "/attachments",
       "method": "GET",
+      "input_query_strings": ["ids"],
+      "output_encoding": "json-collection",
       "backend": [
         {
+          "encoding": "json",
+          "is_collection": true,
           "url_pattern": "/attachments",
           "host": ["http://attachments-service:8080"]
         }

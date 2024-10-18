@@ -371,9 +371,12 @@ func GetMeetingsByIds(w http.ResponseWriter, r *http.Request) {
 func ConvertSummaryToFull(meetingSummary MeetingSummary) Meeting {
 
 	var meeting = Meeting{
-		ID:      meetingSummary.ID,
-		Title:   meetingSummary.Title,
-		Details: meetingSummary.Details,
+		ID:           meetingSummary.ID,
+		Title:        meetingSummary.Title,
+		Details:      meetingSummary.Details,
+		Calendars:    []Calendar{},
+		Participants: []Participant{},
+		Attachments:  []Attachment{},
 	}
 
 	if len(meetingSummary.Calendars) != 0 {
