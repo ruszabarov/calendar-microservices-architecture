@@ -21,22 +21,24 @@ def get_participants():
     if ids:
         participant_ids = ids.split(',')
         participants = Participant.get_multiple(participant_ids)
-        return jsonify({"data" : [p.to_dict() for p in participants if p is not None]})
+        return jsonify([p.to_dict() for p in participants if p is not None]), 200
     else:
         participants = Participant.get_all()
-        return jsonify({"data" : [p.to_dict() for p in participants]})
+        return jsonify([p.to_dict() for p in participants]), 200
+
 
 @app.route('/participants/<participant_id>', methods=['GET'])
 def get_participant(participant_id):
     participant = Participant.get(participant_id)
     if participant:
-        return jsonify({"data" : participant.to_dict()}), 200
+        return jsonify(participant.to_dict()), 200
     return jsonify({"error": "Participant not found"}), 404
+
 
 @app.route('/participants', methods=['POST'])
 def create_participant():
     data = request.get_json()
-    
+
     # Validate input data
     if 'name' not in data or 'email' not in data:
         return jsonify({"error": "Name and email are required"}), 400
@@ -47,14 +49,13 @@ def create_participant():
     if not is_valid_email(data['email']):
         return jsonify({"error": "Invalid email format"}), 400
 
-    if 'id' not in data:
-        participant_id = str(uuid.uuid4())  # Generate a UUID for the participant if not provided
-    else:
-        participant_id = data['id']
+    participant_id = data.get('id', str(uuid.uuid4()))  # Generate a UUID if not provided
     participant = Participant.create(participant_id, data['name'], data['email'])
+    
     if participant:
-        return jsonify({"message": "Successfully created participant"}), 201
-    return jsonify({"error": "Participant not found"}), 404
+        return jsonify(participant.to_dict()), 200
+    return jsonify({"error": "Could not create participant"}), 400
+
 
 @app.route('/participants/<participant_id>', methods=['PUT'])
 def update_participant(participant_id):
@@ -75,12 +76,14 @@ def update_participant(participant_id):
         return jsonify(participant.to_dict()), 200
     return jsonify({"error": "Participant not found"}), 404
 
+
 @app.route('/participants/<participant_id>', methods=['DELETE'])
 def delete_participant(participant_id):
     success = Participant.delete(participant_id)
     if success:
         return jsonify({"message": "Participant deleted"}), 200
     return jsonify({"error": "Participant not found"}), 404
+
 
 if __name__ == '__main__':
     init_db()  # Initialize the database when running the script directly

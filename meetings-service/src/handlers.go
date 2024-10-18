@@ -168,7 +168,6 @@ func AddCalendarToMeeting(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveCalendarFromMeeting(w http.ResponseWriter, r *http.Request) {
-	log.Println("hello world!")
 	vars := mux.Vars(r)
 	meetingId := vars["meetingId"]
 	calendarId := vars["calendarId"]
@@ -199,32 +198,13 @@ func RemoveCalendarFromMeeting(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
 }
 
-func AddParticipantsToMeeting(w http.ResponseWriter, r *http.Request) {
+func AddParticipantToMeeting(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	meetingId := vars["meetingId"]
+	participantId := vars["participantId"]
+	if meetingId == "" || participantId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request MeetingSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Participants) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No participants provided to add")
-		return
-	}
-
-	for _, participantID := range request.Participants {
-		_, err := uuid.Parse(participantID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid participant ID: "+participantID)
-			return
-		}
 	}
 
 	collection := database.Collection("meetings")
@@ -233,17 +213,16 @@ func AddParticipantsToMeeting(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$addToSet": bson.M{
-			"participants": bson.M{
-				"$each": request.Participants,
-			},
+			"participants": participantId,
 		},
 	}
 
 	var meetingSummary MeetingSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&meetingSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
 	if err != nil {
+		log.Println(err)
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
 		return
 	}
@@ -251,32 +230,13 @@ func AddParticipantsToMeeting(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
 }
 
-func RemoveParticipantsFromMeeting(w http.ResponseWriter, r *http.Request) {
+func RemoveParticipantFromMeeting(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	meetingId := vars["meetingId"]
+	participantId := vars["participantId"]
+	if meetingId == "" || participantId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request MeetingSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Participants) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No meetings provided to add")
-		return
-	}
-
-	for _, participantID := range request.Participants {
-		_, err := uuid.Parse(participantID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid meeting ID: "+participantID)
-			return
-		}
 	}
 
 	collection := database.Collection("meetings")
@@ -285,16 +245,14 @@ func RemoveParticipantsFromMeeting(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$pull": bson.M{
-			"participants": bson.M{
-				"$in": request.Participants,
-			},
+			"participants": participantId,
 		},
 	}
 
 	var meetingSummary MeetingSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&meetingSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
 		return
@@ -303,32 +261,14 @@ func RemoveParticipantsFromMeeting(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
 }
 
-func AddAttachmentsToMeeting(w http.ResponseWriter, r *http.Request) {
+func AddAttachmentToMeeting(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	meetingId := vars["meetingId"]
+	attachmentId := vars["attachmentId"]
+
+	if meetingId == "" || attachmentId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request MeetingSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Attachments) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No attachments provided to add")
-		return
-	}
-
-	for _, attachmentID := range request.Attachments {
-		_, err := uuid.Parse(attachmentID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid attachment ID: "+attachmentID)
-			return
-		}
 	}
 
 	collection := database.Collection("meetings")
@@ -337,16 +277,14 @@ func AddAttachmentsToMeeting(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$addToSet": bson.M{
-			"attachments": bson.M{
-				"$each": request.Attachments,
-			},
+			"attachments": attachmentId,
 		},
 	}
 
 	var meetingSummary MeetingSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&meetingSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
 		return
@@ -355,32 +293,13 @@ func AddAttachmentsToMeeting(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, ConvertSummaryToFull(meetingSummary))
 }
 
-func RemoveAttachmentsFromMeeting(w http.ResponseWriter, r *http.Request) {
+func RemoveAttachmentFromMeeting(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id := vars["id"]
-	if id == "" {
+	meetingId := vars["meetingId"]
+	attachmentId := vars["attachmentId"]
+	if meetingId == "" || attachmentId == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing 'id' parameter")
 		return
-	}
-
-	var request MeetingSummary
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-
-	if len(request.Attachments) == 0 {
-		respondWithError(w, http.StatusBadRequest, "No attachments provided to remove")
-		return
-	}
-
-	for _, attachmentID := range request.Attachments {
-		_, err := uuid.Parse(attachmentID)
-		if err != nil {
-			respondWithError(w, http.StatusBadRequest, "Invalid attachment ID: "+attachmentID)
-			return
-		}
 	}
 
 	collection := database.Collection("meetings")
@@ -389,16 +308,14 @@ func RemoveAttachmentsFromMeeting(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$pull": bson.M{
-			"attachments": bson.M{
-				"$in": request.Attachments,
-			},
+			"attachments": attachmentId,
 		},
 	}
 
 	var meetingSummary MeetingSummary
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&meetingSummary)
+	err := collection.FindOneAndUpdate(ctx, bson.M{"_id": meetingId}, update, opts).Decode(&meetingSummary)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
 		return
@@ -452,17 +369,26 @@ func GetMeetingsByIds(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConvertSummaryToFull(meetingSummary MeetingSummary) Meeting {
-	calendars := GetCalendarsByIds(meetingSummary.Calendars)
-	// attachments := GetAttachmentsByIds(meetingSummary.Attachments)
-	// participants := getParticipantsByIds(meetingSummary.Participants)
 
 	var meeting = Meeting{
-		ID:        meetingSummary.ID,
-		Title:     meetingSummary.Title,
-		Details:   meetingSummary.Details,
-		Calendars: calendars,
-		// Attachments:  attachments,
-		// Participants: participants,
+		ID:           meetingSummary.ID,
+		Title:        meetingSummary.Title,
+		Details:      meetingSummary.Details,
+		Calendars:    []Calendar{},
+		Participants: []Participant{},
+		Attachments:  []Attachment{},
+	}
+
+	if len(meetingSummary.Calendars) != 0 {
+		meeting.Calendars = GetCalendarsByIds(meetingSummary.Calendars)
+	}
+
+	if len(meetingSummary.Participants) != 0 {
+		meeting.Participants = getParticipantsByIds(meetingSummary.Participants)
+	}
+
+	if len(meetingSummary.Attachments) != 0 {
+		meeting.Attachments = GetAttachmentsByIds(meetingSummary.Attachments)
 	}
 
 	return meeting

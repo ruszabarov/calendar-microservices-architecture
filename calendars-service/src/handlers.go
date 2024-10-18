@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -33,7 +32,8 @@ func GetCalendars(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var calendars []Calendar
+	calendars := []Calendar{}
+
 	for _, calendarSummary := range calendarSummaries {
 		calendars = append(calendars, ConvertSummaryToFull(calendarSummary))
 	}
@@ -50,8 +50,6 @@ func GetCalendars(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error writing response", http.StatusInternalServerError)
 		return
 	}
-
-	log.Println("Success: GetCalendars")
 }
 
 func CreateCalendar(w http.ResponseWriter, r *http.Request) {

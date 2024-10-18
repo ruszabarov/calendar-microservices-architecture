@@ -1,0 +1,15 @@
+meta {
+  name: get attachments
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_URL}}/attachments?ids=id1
+  body: none
+  auth: none
+}
+
+params:query {
+  ids: id1
+}

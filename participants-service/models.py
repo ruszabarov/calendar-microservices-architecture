@@ -30,11 +30,17 @@ class Participant:
     def create(participant_id, name, email):
         conn = get_db()
         with conn:
-            try:
-                cur = conn.execute('INSERT INTO participants (id, name, email) VALUES (?, ?, ?)', (participant_id, name, email))
-                return "SUCCESS"
-            except:
-                return None
+            cur = conn.execute(
+                'INSERT INTO participants (id, name, email) VALUES (?, ?, ?)', 
+                (participant_id, name, email)
+            )
+            # Fetch the newly added participant
+            row = conn.execute(
+                'SELECT id, name, email FROM participants WHERE id = ?', 
+                (participant_id,)
+            ).fetchone()
+            return Participant.from_row(row) if row else None
+
 
 
     @staticmethod

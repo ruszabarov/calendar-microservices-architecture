@@ -203,21 +203,31 @@
       ]
     },
     {
-      "endpoint": "/meetings/{meetingId}/participants",
-      "method": "POST",
+      "endpoint": "/meetings/{meetingId}/addParticipant/{participantId}",
+      "method": "GET",
       "backend": [
         {
-          "url_pattern": "/meetings/{meetingId}/participants",
+          "url_pattern": "/meetings/{meetingId}/addParticipant/{participantId}",
           "host": ["http://meetings-service:8080"]
         }
       ]
     },
     {
-      "endpoint": "/meetings/{meetingId}/attachments",
-      "method": "POST",
+      "endpoint": "/meetings/{meetingId}/addAttachment/{attachmentId}",
+      "method": "GET",
       "backend": [
         {
-          "url_pattern": "/meetings/{meetingId}/attachments",
+          "url_pattern": "/meetings/{meetingId}/addAttachment/{attachmentId}",
+          "host": ["http://meetings-service:8080"]
+        }
+      ]
+    },
+    {
+      "endpoint": "/meetings/{meetingId}/removeAttachment/{attachmentId}",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/meeting/{meetingId}/removeAttachment/{attachmentId}",
           "host": ["http://meetings-service:8080"]
         }
       ]
@@ -235,8 +245,12 @@
     {
       "endpoint": "/participants",
       "method": "GET",
+      "input_query_strings": ["ids"],
+      "output_encoding": "json-collection",
       "backend": [
         {
+          "encoding": "json",
+          "is_collection": true,
           "url_pattern": "/participants",
           "host": ["http://participants-service:8080"]
         }
@@ -286,8 +300,12 @@
     {
       "endpoint": "/attachments",
       "method": "GET",
+      "input_query_strings": ["ids"],
+      "output_encoding": "json-collection",
       "backend": [
         {
+          "encoding": "json",
+          "is_collection": true,
           "url_pattern": "/attachments",
           "host": ["http://attachments-service:8080"]
         }

@@ -100,9 +100,7 @@ const Calendars = () => {
     const handleAddMeeting = async () => {
         if (newMeetingUUID) {
             try {
-                const response = await axios.post(`/api/meetings/${editingElement.id}/participants`,
-                    [newMeetingUUID]
-                );
+                const response = await axios.get(`/api/calendars/${editingElement.id}/addMeeting/${newMeetingUUID}`);
                 setCalendars(calendars.map(calendar => calendar.id === response.data.id ? response.data : calendar));
                 setNewMeetingUUID('');
             } catch (error) {
@@ -130,7 +128,7 @@ const Calendars = () => {
             <div className="meeting-form" style={{ marginBottom: '50px' }}>
                 <h4>Add Meeting by UUID</h4>
                 <input name="meetingUUID" value={newMeetingUUID} onChange={handleMeetingUUIDChange}
-                    placeholder="Participant UUID" />
+                    placeholder="Meeting UUID" />
                 <button onClick={handleAddMeeting}>Add Meeting</button>
             </div>
 
@@ -156,6 +154,7 @@ const Calendars = () => {
                                     <p><strong>Date & Time:</strong> {meeting.dateTime}</p>
                                     <p><strong>Location:</strong> {meeting.location}</p>
                                     <p><strong>Details:</strong> {meeting.details}</p>
+                                    <hr />
                                 </div>
                             ))}
                         </>
