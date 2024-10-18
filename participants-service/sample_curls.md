@@ -38,5 +38,5 @@ curl -X PUT http://localhost:8080/participants/<participant_id> \
 
 ### Deleting a Participant
 ```bash
-curl -X DELETE http://127.0.0.1:8080/participants/<participant_id>
+curl -X DELETE http://localhost:8080/participants/<participant_id>
 ```
