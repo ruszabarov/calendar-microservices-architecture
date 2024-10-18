@@ -57,6 +57,19 @@ def create_attachment_with_id(
     return db_attachment
 
 
+# Create Attachment without IDs
+@app.post("/attachments", response_model=schemas.Attachment)
+def create_attachment(
+        attachment: schemas.AttachmentCreateWithoutId,
+        db: Session = Depends(get_db)
+):
+    new_attachment = schemas.AttachmentCreate(
+        url=attachment.url,
+    )
+    db_attachment = crud.create_attachment(db, new_attachment)
+    return db_attachment
+
+
 # Update Attachment
 @app.put("/attachments/{id}", response_model=schemas.Attachment)
 def update_attachment(
