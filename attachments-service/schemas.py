@@ -4,12 +4,11 @@ import uuid
 
 
 class AttachmentBase(BaseModel):
-    meetingId: str
-    attachmentUrl: HttpUrl
+    url: HttpUrl
 
 
 class AttachmentCreate(AttachmentBase):
-    attachmentsId: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: Optional[str] = Field(default_factory=lambda: str(uuid.uuid4()))
 
 
 class AttachmentCreateWithoutId(AttachmentBase):
@@ -17,7 +16,7 @@ class AttachmentCreateWithoutId(AttachmentBase):
 
 
 class Attachment(AttachmentBase):
-    attachmentsId: str
+    id: str
 
     class Config:
         orm_mode = True
