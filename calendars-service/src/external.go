@@ -32,3 +32,16 @@ func GetMeetingsByIds(ids []string) []MeetingSummary {
 
 	return data
 }
+
+func AddCalendarToMeeting(meetingId string, calendarId string) {
+	url := fmt.Sprintf("http://krakend:8080/calendars/%s/addMeeting/%s", calendarId, meetingId)
+
+	resp, err := httpClient.Get(url)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	resp.Body.Close()
+
+	return
+}

@@ -4,8 +4,14 @@ meta {
   seq: 2
 }
 
-get {
+post {
   url: {{BASE_URL}}/attachments
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "url": "http://helloworld.com"
+  }
 }

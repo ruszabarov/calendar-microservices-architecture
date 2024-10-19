@@ -74,6 +74,10 @@ func CreateCalendar(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(calendarSummary.Meetings) > 0 {
+		AddCalendarToMeeting(calendarSummary.Meetings[0], calendarSummary.ID)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(calendarSummary)
 }

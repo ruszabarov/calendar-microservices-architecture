@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/url"
 	"time"
 )
 
@@ -40,6 +39,6 @@ type Participant struct {
 }
 
 type Attachment struct {
-	ID  string   `json:"id" bson:"_id,omitempty"`
-	URL *url.URL `json:"url" bson:"url"`
+	ID  string `json:"id" bson:"_id,omitempty"`
+	URL string `json:"url" bson:"url"`
 }
