@@ -30,12 +30,16 @@ public class Meeting {
             @JsonProperty("datetime") String dateTime,
             @JsonProperty("location") String location,
             @JsonProperty("details") String details,
+            @JsonProperty("attachments") List<Attachment> attachments,
+            @JsonProperty("participants") List<Participant> participants,
             @JsonProperty("calendars") List<Calendar> calendars) {
         this.id = id;
         this.title = title;
         this.dateTime = dateTime;
         this.location = location;
         this.details = details;
+        this.participants = participants != null ? participants : new ArrayList<>();
+        this.attachments = attachments != null ? attachments : new ArrayList<>();
         this.calendars = calendars != null ? calendars : new ArrayList<>();
     }
 

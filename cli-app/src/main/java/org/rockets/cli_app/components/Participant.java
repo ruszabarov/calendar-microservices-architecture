@@ -1,5 +1,8 @@
 package org.rockets.cli_app.components;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Participant {
@@ -11,7 +14,8 @@ public class Participant {
         this.id = id;
     }
 
-    public Participant(String id, String name, String email) {
+    @JsonCreator
+    public Participant(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("email") String email) {
         this(id);
         this.name = name;
         this.email = email;

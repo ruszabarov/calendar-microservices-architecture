@@ -82,9 +82,10 @@ func UpdateMeetingById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	var updatedMeeting Meeting
+	var updatedMeeting MeetingSummary
 	err := json.NewDecoder(r.Body).Decode(&updatedMeeting)
 	if err != nil {
+		log.Println(err)
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -109,6 +110,7 @@ func UpdateMeetingById(w http.ResponseWriter, r *http.Request) {
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	err = collection.FindOneAndUpdate(ctx, bson.M{"_id": id}, update, opts).Decode(&meetingSummary)
 	if err != nil {
+		log.Println(err)
 		respondWithError(w, http.StatusInternalServerError, "Error fetching updated meeting")
 		return
 	}

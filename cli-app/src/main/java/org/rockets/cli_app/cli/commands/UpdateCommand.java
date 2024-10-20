@@ -245,7 +245,7 @@ public class UpdateCommand implements Runnable {
                     return;
                 }
 
-                attachment.setAttachmentUrl(url);
+                attachment.setUrl(url);
 
                 attachmentController.updateAttachmentById(id, attachment);
                 System.out.println("Successfully updated attachment (" + id + ")");

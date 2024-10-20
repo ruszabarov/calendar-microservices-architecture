@@ -1,30 +1,34 @@
 package org.rockets.cli_app.components;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Attachment {
     private final String id;
-    private String attachmentUrl;
+    private String url;
 
-    public Attachment(String attachmentId) {
-        this.id = attachmentId;
+    public Attachment(String id) {
+        this.id = id;
     }
 
-    public Attachment(String attachmentId, String attachmentUrl) {
-        this(attachmentId);
-        this.attachmentUrl = attachmentUrl;
+    @JsonCreator
+    public Attachment(@JsonProperty("id") String id, @JsonProperty("url") String url) {
+        this(id);
+        this.url = url;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getAttachmentUrl() {
-        return attachmentUrl;
+    public String getUrl() {
+        return url;
     }
 
-    public void setAttachmentUrl(String attachmentUrl) {
-        this.attachmentUrl = attachmentUrl;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Override
@@ -42,6 +46,6 @@ public class Attachment {
 
     @Override
     public String toString() {
-        return "(Attachment) id: " + getId() + " | url: " + getAttachmentUrl();
+        return "(Attachment) id: " + getId() + " | url: " + getUrl();
     }
 }

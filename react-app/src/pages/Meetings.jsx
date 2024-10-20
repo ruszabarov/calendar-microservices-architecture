@@ -34,7 +34,10 @@ const Meetings = () => {
     await axios.post(`/api/meetings`, {
       ...editingElement,
       id: editingElement.id ? editingElement.id : undefined,
-      participantIds: [editingElement.participantIds]
+      participants: [editingElement.participantIds],
+      attachments: [],
+      calendars: [],
+      participantIds: undefined,
     });
     fetchMeetings();
     resetForm();
