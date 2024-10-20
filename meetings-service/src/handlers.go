@@ -97,8 +97,10 @@ func UpdateMeetingById(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$set": bson.M{
-			"title":   updatedMeeting.Title,
-			"details": updatedMeeting.Details,
+			"title":    updatedMeeting.Title,
+			"details":  updatedMeeting.Details,
+			"location": updatedMeeting.Location,
+			"datetime": updatedMeeting.DateTime,
 		},
 	}
 
@@ -369,11 +371,17 @@ func GetMeetingsByIds(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConvertSummaryToFull(meetingSummary MeetingSummary) Meeting {
+	parsedDateTime, err := parseCustomDateTime(meetingSummary.DateTime)
+	if err != nil {
+		parsedDateTime = time.Now()
+	}
 
 	var meeting = Meeting{
 		ID:           meetingSummary.ID,
 		Title:        meetingSummary.Title,
 		Details:      meetingSummary.Details,
+		Location:     meetingSummary.Location,
+		DateTime:     parsedDateTime,
 		Calendars:    []Calendar{},
 		Participants: []Participant{},
 		Attachments:  []Attachment{},

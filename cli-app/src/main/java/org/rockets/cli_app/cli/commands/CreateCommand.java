@@ -154,7 +154,7 @@ public class CreateCommand implements Runnable {
                 ParticipantService participantService = new ParticipantService();
                 participantService.createParticipant(participant);
 
-                System.out.println("Successfully created participant (" + participant.getParticipantId() + ")");
+                System.out.println("Successfully created participant (" + participant.getId() + ")");
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
             }
@@ -187,7 +187,7 @@ public class CreateCommand implements Runnable {
 
                 attachmentService.createAttachment(attachment);
 
-                System.out.println("Successfully created an attachment (" + attachment.getAttachmentId() + ")");
+                System.out.println("Successfully created an attachment (" + attachment.getId() + ")");
 
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());

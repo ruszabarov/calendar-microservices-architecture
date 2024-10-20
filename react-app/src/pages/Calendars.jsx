@@ -67,7 +67,7 @@ const Calendars = () => {
   const handleEdit = (index, item) => {
     setIsEditing(true);
     setEditIndex(index);
-    setEditingElement(item);
+    setEditingElement({ ...item, meetings: "" });
   };
 
   // Handles delete
@@ -151,7 +151,7 @@ const Calendars = () => {
                 <div key={index} style={{ marginLeft: '20px', marginBottom: '10px' }}>
                   <p><strong>UUID:</strong> {meeting.id}</p>
                   <p><strong>Title:</strong> {meeting.title}</p>
-                  <p><strong>Date & Time:</strong> {meeting.dateTime}</p>
+                  <p><strong>Date & Time:</strong> {meeting.datetime}</p>
                   <p><strong>Location:</strong> {meeting.location}</p>
                   <p><strong>Details:</strong> {meeting.details}</p>
                   <hr />

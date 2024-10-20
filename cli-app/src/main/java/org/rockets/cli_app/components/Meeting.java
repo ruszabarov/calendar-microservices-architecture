@@ -1,11 +1,16 @@
 package org.rockets.cli_app.components;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Meeting {
-    private final String meetingId;
+    private final String id;
     private String title;
     private String dateTime;
     private String location;
@@ -14,20 +19,28 @@ public class Meeting {
     private List<Attachment> attachments = new ArrayList<>();
     private List<Calendar> calendars = new ArrayList<>();
 
-    public Meeting(String meetingId) {
-        this.meetingId = meetingId;
+    public Meeting(String id) {
+        this.id = id;
     }
 
-    public Meeting(String meetingId, String title, String dateTime, String location, String details) {
-        this(meetingId);
+    @JsonCreator
+    public Meeting(
+            @JsonProperty("id") String id,
+            @JsonProperty("title") String title,
+            @JsonProperty("datetime") String dateTime,
+            @JsonProperty("location") String location,
+            @JsonProperty("details") String details,
+            @JsonProperty("calendars") List<Calendar> calendars) {
+        this.id = id;
         this.title = title;
         this.dateTime = dateTime;
         this.location = location;
         this.details = details;
+        this.calendars = calendars != null ? calendars : new ArrayList<>();
     }
 
-    public String getMeetingId() {
-        return meetingId;
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -87,7 +100,7 @@ public class Meeting {
     }
 
     public void addParticipant(Participant participant) {
-        if (participant != null && participant.getParticipantId() != null && !participants.contains(participant)) {
+        if (participant != null && participant.getId() != null && !participants.contains(participant)) {
             participants.add(participant);
         }
     }
@@ -97,7 +110,7 @@ public class Meeting {
     }
 
     public void addAttachment(Attachment attachment) {
-        if (attachment != null && attachment.getAttachmentId() != null && !attachments.contains(attachment)) {
+        if (attachment != null && attachment.getId() != null && !attachments.contains(attachment)) {
             attachments.add(attachment);
         }
     }
@@ -107,7 +120,7 @@ public class Meeting {
     }
 
     public void addCalendar(Calendar calendar) {
-        if (calendar != null && calendar.getCalendarId() != null && !calendars.contains(calendar)) {
+        if (calendar != null && calendar.getId() != null && !calendars.contains(calendar)) {
             calendars.add(calendar);
         }
     }
@@ -121,17 +134,47 @@ public class Meeting {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Meeting meeting = (Meeting) o;
-        return Objects.equals(meetingId, meeting.meetingId);
+        return Objects.equals(id, meeting.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(meetingId);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "(Meeting) id: " + getMeetingId() + " | title: " + getTitle() + " | date: "
+        return "(Meeting) id: " + getId() + " | title: " + getTitle() + " | date: "
                 + getDateTime() + " | location: " + getLocation() + " | details: " + getDetails();
+    }
+
+    public String calendarsToString() {
+        StringBuilder result = new StringBuilder("Calendars:\n");
+
+        for (Calendar c : getCalendars()) {
+            result.append("\t").append(c.toString()).append("\n");
+        }
+
+        return result.toString();
+    }
+
+    public String attachmentsToString() {
+        StringBuilder result = new StringBuilder("Attachments:\n");
+
+        for (Attachment a : getAttachments()) {
+            result.append("\t").append(a.toString()).append("\n");
+        }
+
+        return result.toString();
+    }
+
+    public String participantsToString() {
+        StringBuilder result = new StringBuilder("Participants:\n");
+
+        for (Participant p : getParticipants()) {
+            result.append("\t").append(p.toString()).append("\n");
+        }
+
+        return result.toString();
     }
 }

@@ -31,10 +31,10 @@ public class ParticipantService {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ApiResponse<List<Participant>> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
+            List<Participant> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
             });
 
-            return Objects.requireNonNull(apiResponse).getData();
+            return Objects.requireNonNull(apiResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error fetching participants", e);
         }
@@ -51,30 +51,26 @@ public class ParticipantService {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ApiResponse<Participant> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
+            Participant apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
             });
 
-            return Objects.requireNonNull(apiResponse).getData();
+            return Objects.requireNonNull(apiResponse);
         } catch (Exception e) {
             throw new RuntimeException("Error creating participant", e);
         }
     }
 
-    public Participant updateParticipantById(String id, Participant participant) {
+    public void updateParticipantById(String id, Participant participant) {
         try {
             String requestBody = objectMapper.writeValueAsString(participant);
 
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/participants/" + id))
                     .header("Content-Type", "application/json")
-                    .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                    .method("PUT", HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                     .build();
 
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            ApiResponse<Participant> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
-            });
-
-            return Objects.requireNonNull(apiResponse).getData();
+            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             throw new RuntimeException("Error updating participant", e);
         }

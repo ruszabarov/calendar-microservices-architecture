@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class Calendar {
-    private final String calendarId;
+    private final String id;
     private String title;
     private String details;
     private List<Meeting> meetings = new ArrayList<>();
 
     public Calendar(String calendarId) {
-        this.calendarId = calendarId;
+        this.id = calendarId;
     }
 
     public Calendar(String calendarId, String title, String details) {
@@ -29,15 +29,15 @@ public class Calendar {
             @JsonProperty("title") String title,
             @JsonProperty("details") String details,
             @JsonProperty("meetings") List<Meeting> meetings) {
-        this.calendarId = calendarId;
+        this.id = calendarId;
         this.title = title;
         this.details = details;
         this.meetings = meetings != null ? meetings : new ArrayList<>();
     }
 
-    
-    public String getCalendarId() {
-        return calendarId;
+
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -65,7 +65,7 @@ public class Calendar {
     }
 
     public void addMeeting(Meeting meeting) {
-        if (meeting.getMeetingId() != null && !meetings.contains(meeting)) {
+        if (meeting.getId() != null && !meetings.contains(meeting)) {
             meetings.add(meeting);
         }
     }
@@ -81,17 +81,17 @@ public class Calendar {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Calendar calendar = (Calendar) o;
-        return Objects.equals(calendarId, calendar.getCalendarId());
+        return Objects.equals(id, calendar.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(calendarId);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "(Calendar) id: " + getCalendarId() + " | title: " + getTitle() + " | details: " + getDetails();
+        return "(Calendar) id: " + getId() + " | title: " + getTitle() + " | details: " + getDetails();
     }
 
     public String meetingsToString() {

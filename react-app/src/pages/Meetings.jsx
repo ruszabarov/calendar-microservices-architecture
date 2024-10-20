@@ -12,7 +12,7 @@ const Meetings = () => {
     id: '',
     title: '',
     details: '',
-    dateTime: '',
+    datetime: '',
     location: '',
     participantIds: '',
   });
@@ -92,7 +92,7 @@ const Meetings = () => {
       id: editingElement.id,
       title: editingElement.title,
       details: editingElement.details,
-      dateTime: editingElement.dateTime,
+      datetime: editingElement.datetime,
       location: editingElement.location,
     };
     const response = await axios.put(`/api/meetings/${updatedItem.id}`, updatedItem);
@@ -105,7 +105,7 @@ const Meetings = () => {
       id: '',
       title: '',
       details: '',
-      dateTime: '',
+      datetime: '',
       location: '',
     });
     setIsEditing(false);
@@ -119,7 +119,7 @@ const Meetings = () => {
           placeholder="Meeting UUID" />
         <input name="title" value={editingElement.title} onChange={handleInputChange}
           placeholder="Title" />
-        <input name="dateTime" value={editingElement.dateTime} onChange={handleInputChange}
+        <input name="datetime" value={editingElement.datetime} onChange={handleInputChange}
           placeholder="Date and Time (YYYY-MM-DD HH:MM AM/PM)" />
         <input name="location" value={editingElement.location} onChange={handleInputChange}
           placeholder="Location" />
@@ -147,7 +147,7 @@ const Meetings = () => {
         <button onClick={handleAddAttachment}>Add Attachment</button>
       </div>
 
-      {meetings.map((meeting, index) => (
+      {meetings && meetings.map((meeting, index) => (
         <div style={{
           marginBottom: '30px',
           padding: '10px',
@@ -157,7 +157,7 @@ const Meetings = () => {
         }} key={index}>
           <h3>{meeting.title}</h3>
           <p><strong>UUID:</strong> {meeting.id}</p>
-          <p><strong>Date & Time:</strong> {meeting.dateTime}</p>
+          <p><strong>Date & Time:</strong> {meeting.datetime}</p>
           <p><strong>Location:</strong> {meeting.location}</p>
           <p><strong>Details:</strong> {meeting.details}</p>
 

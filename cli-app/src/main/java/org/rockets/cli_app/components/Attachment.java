@@ -3,11 +3,11 @@ package org.rockets.cli_app.components;
 import java.util.Objects;
 
 public class Attachment {
-    private final String attachmentId;
+    private final String id;
     private String attachmentUrl;
 
     public Attachment(String attachmentId) {
-        this.attachmentId = attachmentId;
+        this.id = attachmentId;
     }
 
     public Attachment(String attachmentId, String attachmentUrl) {
@@ -15,8 +15,8 @@ public class Attachment {
         this.attachmentUrl = attachmentUrl;
     }
 
-    public String getAttachmentId() {
-        return attachmentId;
+    public String getId() {
+        return id;
     }
 
     public String getAttachmentUrl() {
@@ -32,16 +32,16 @@ public class Attachment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Attachment attachment = (Attachment) o;
-        return Objects.equals(attachmentId, attachment.attachmentId);
+        return Objects.equals(id, attachment.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(attachmentId);
+        return Objects.hash(id);
     }
 
     @Override
     public String toString() {
-        return "(Attachment) id: " + getAttachmentId() + " | url: " + getAttachmentUrl();
+        return "(Attachment) id: " + getId() + " | url: " + getAttachmentUrl();
     }
 }

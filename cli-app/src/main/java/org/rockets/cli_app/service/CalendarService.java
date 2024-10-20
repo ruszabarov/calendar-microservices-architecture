@@ -32,11 +32,11 @@ public class CalendarService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         System.out.println(response.body());
-        ApiResponse<List<Calendar>> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
+        List<Calendar> apiResponse = objectMapper.readValue(response.body(), new TypeReference<>() {
         });
 
 
-        return Objects.requireNonNull(apiResponse).getData();
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Calendar createCalendar(CalendarDTO calendar) throws Exception {
@@ -49,26 +49,22 @@ public class CalendarService {
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        ApiResponse<Calendar> apiResponse = objectMapper.readValue(response.body(), new TypeReference<ApiResponse<Calendar>>() {
+        Calendar apiResponse = objectMapper.readValue(response.body(), new TypeReference<Calendar>() {
         });
 
-        return Objects.requireNonNull(apiResponse).getData();
+        return Objects.requireNonNull(apiResponse);
     }
 
-    public Calendar updateCalendarById(String id, CalendarDTO calendar) throws Exception {
+    public void updateCalendarById(String id, CalendarDTO calendar) throws Exception {
         String requestBody = objectMapper.writeValueAsString(calendar);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + "/calendars/" + id))
                 .header("Content-Type", "application/json")
-                .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
+                .method("PUT", HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        ApiResponse<Calendar> apiResponse = objectMapper.readValue(response.body(), new TypeReference<ApiResponse<Calendar>>() {
-        });
-
-        return Objects.requireNonNull(apiResponse).getData();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public void deleteCalendarById(String id) throws Exception {
@@ -90,10 +86,10 @@ public class CalendarService {
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        ApiResponse<Calendar> apiResponse = objectMapper.readValue(response.body(), new TypeReference<ApiResponse<Calendar>>() {
+        Calendar apiResponse = objectMapper.readValue(response.body(), new TypeReference<Calendar>() {
         });
 
-        return Objects.requireNonNull(apiResponse).getData();
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Calendar removeMeetingsFromCalendar(String calendarId, List<String> meetingIds) throws Exception {
@@ -106,9 +102,9 @@ public class CalendarService {
                 .build();
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        ApiResponse<Calendar> apiResponse = objectMapper.readValue(response.body(), new TypeReference<ApiResponse<Calendar>>() {
+        Calendar apiResponse = objectMapper.readValue(response.body(), new TypeReference<Calendar>() {
         });
 
-        return Objects.requireNonNull(apiResponse).getData();
+        return Objects.requireNonNull(apiResponse);
     }
 }

@@ -1,17 +1,14 @@
 package org.rockets.cli_app.dto;
 
-import org.rockets.cli_app.components.Attachment;
 import org.rockets.cli_app.components.Calendar;
-import org.rockets.cli_app.components.Participant;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MeetingDTO {
     private final String meetingId;
     private String title;
-    private String dateTime;
+    private String datetime;
     private String location;
     private String details;
     private List<String> participants = new ArrayList<>();
@@ -26,7 +23,7 @@ public class MeetingDTO {
     public MeetingDTO(String meetingId, String title, String dateTime, String location, String details) {
         this(meetingId);
         this.title = title;
-        this.dateTime = dateTime;
+        this.datetime = dateTime;
         this.location = location;
         this.details = details;
     }
@@ -48,12 +45,12 @@ public class MeetingDTO {
         this.title = title;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    public String getDatetime() {
+        return datetime;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
     public String getLocation() {

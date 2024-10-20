@@ -26,8 +26,8 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<List<Meeting>> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        List<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Meeting createMeeting(MeetingDTO meetingDTO) throws IOException, InterruptedException {
@@ -39,21 +39,18 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        Meeting apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 
-    public Meeting updateMeetingById(String id, MeetingDTO meeting) throws IOException, InterruptedException {
+    public void updateMeetingById(String id, MeetingDTO meeting) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(baseUrl + "/meetings/" + id))
                 .header("Content-Type", "application/json")
-                .method("PATCH", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(meeting)))
+                .method("PUT", HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(meeting)))
                 .build();
 
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public void deleteMeetingById(String id) throws IOException, InterruptedException {
@@ -74,8 +71,8 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        Meeting apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Meeting removeParticipantsFromMeeting(String meetingId, List<String> participantIds) throws IOException, InterruptedException {
@@ -87,8 +84,8 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        Meeting apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Meeting addAttachmentsToMeeting(String meetingId, List<String> attachmentIds) throws IOException, InterruptedException {
@@ -100,8 +97,8 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        Meeting apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 
     public Meeting removeAttachmentsFromMeeting(String meetingId, List<String> attachmentIds) throws IOException, InterruptedException {
@@ -113,7 +110,7 @@ public class MeetingService {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-        ApiResponse<Meeting> apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(ApiResponse.class, Meeting.class));
-        return Objects.requireNonNull(apiResponse).getData();
+        Meeting apiResponse = objectMapper.readValue(response.body(), objectMapper.getTypeFactory().constructParametricType(List.class, Meeting.class));
+        return Objects.requireNonNull(apiResponse);
     }
 }

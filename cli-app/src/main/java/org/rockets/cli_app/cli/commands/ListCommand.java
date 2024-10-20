@@ -51,6 +51,9 @@ public class ListCommand implements Runnable {
                 System.out.println("Listing all meetings.");
                 for (Meeting meeting : meetings) {
                     System.out.println(meeting);
+                    System.out.println(meeting.calendarsToString());
+                    System.out.println(meeting.participantsToString());
+                    System.out.println(meeting.attachmentsToString());
                 }
             } catch (Exception e) {
                 System.err.println("An error occurred: " + e.getMessage());
@@ -74,6 +77,7 @@ public class ListCommand implements Runnable {
                 System.out.println("Listing all calendars.");
                 for (Calendar calendar : calendars) {
                     System.out.println(calendar);
+                    System.out.println(calendar.meetingsToString());
                 }
 
             } catch (Exception e) {

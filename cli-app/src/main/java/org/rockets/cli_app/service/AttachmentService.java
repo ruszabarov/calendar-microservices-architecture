@@ -28,8 +28,7 @@ public class AttachmentService {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String responseBody = response.body();
-            ApiResponse<List<Attachment>> apiResponse = objectMapper.readValue(responseBody, ApiResponse.class);
-            return apiResponse.getData();
+            return objectMapper.readValue(responseBody, List.class);
         } catch (Error | IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
@@ -47,8 +46,7 @@ public class AttachmentService {
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            ApiResponse<Attachment> apiResponse = objectMapper.readValue(response.body(), ApiResponse.class);
-            return apiResponse.getData();
+            return objectMapper.readValue(response.body(), Attachment.class);
         } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
@@ -56,23 +54,19 @@ public class AttachmentService {
         return null;
     }
 
-    public Attachment updateAttachmentById(String id, Attachment attachment) {
+    public void updateAttachmentById(String id, Attachment attachment) {
         try {
             String requestBody = objectMapper.writeValueAsString(attachment);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(baseUrl + "/attachments/" + id))
                     .header("Content-Type", "application/json")
-                    .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBody))
+                    .method("PUT", HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            ApiResponse<Attachment> apiResponse = objectMapper.readValue(response.body(), ApiResponse.class);
-            return apiResponse.getData();
+            client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             System.err.println(e.getMessage());
         }
-
-        return null;
     }
 
     public void deleteAttachmentById(String id) {

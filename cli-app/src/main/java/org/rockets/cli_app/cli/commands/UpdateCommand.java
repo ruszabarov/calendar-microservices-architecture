@@ -3,8 +3,6 @@ package org.rockets.cli_app.cli.commands;
 import org.rockets.Check;
 import org.rockets.cli_app.cli.common.HelpOption;
 import org.rockets.cli_app.components.Attachment;
-import org.rockets.cli_app.components.Calendar;
-import org.rockets.cli_app.components.Meeting;
 import org.rockets.cli_app.components.Participant;
 import org.rockets.cli_app.dto.CalendarDTO;
 import org.rockets.cli_app.dto.MeetingDTO;
@@ -95,7 +93,7 @@ public class UpdateCommand implements Runnable {
                         System.err.println("Invalid date format");
                         return;
                     }
-                    meeting.setDateTime(dateTime);
+                    meeting.setDatetime(dateTime);
                 }
                 if (location != null) {
                     Check.limitString(location, 2000);
